@@ -14,23 +14,25 @@ export class AnimalController {
     @Post()
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'picture', maxCount: 1 },
-        { name: 'audio', maxCount: 1 },
     ]))
     create(@UploadedFiles() files, @Body() dto: CreateAnimalDto) {
-        const { picture, audio } = files
+        const { picture } = files
         return this.animalService.create(dto, picture[0]);
     }
 
     @Get()
     getAll(@Query('count') count: number,
-        @Query('offset') offset: number): Promise<Animal[]> {
-        return this.animalService.getAll(count, offset)
+        @Query('offset') offset: number,
+        @Query('type') type: string): Promise<Animal[]> {
+        const data = this.animalService.getAll(count, offset, type);
+
+        return data;
     }
 
-    @Get()
-    search(@Query('query') query: string) {
-        return this.animalService.search(query)
-    }
+    // @Get()
+    // search(@Query('query') query: string) {
+    //     return this.animalService.search(query)
+    // }
 
     @Get(':id')
     getOne(@Param('id') id: ObjectId) {

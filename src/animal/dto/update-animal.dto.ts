@@ -4,4 +4,5 @@ export class UpdateAnimalDto {
     readonly date;
     readonly text;
     readonly sex;
+    readonly type;
 }

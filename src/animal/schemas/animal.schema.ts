@@ -29,4 +29,6 @@ export class Animal {
 
 }
 
+
+
 export const AnimalSchema = SchemaFactory.createForClass(Animal);
