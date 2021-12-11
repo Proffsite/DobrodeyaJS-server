@@ -7,10 +7,10 @@ import { FileService } from "../file/file.service";
 
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Animal.name, schema: AnimalSchema }]),
-    ],
-    controllers: [AnimalController],
-    providers: [AnimalService, FileService]
+	imports: [
+		MongooseModule.forFeature([{ name: Animal.name, schema: AnimalSchema }]),
+	],
+	controllers: [AnimalController],
+	providers: [AnimalService, FileService]
 })
 export class AnimalModule { }

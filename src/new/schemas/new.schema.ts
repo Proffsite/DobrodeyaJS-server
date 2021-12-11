@@ -1,19 +1,15 @@
+/* eslint-disable prettier/prettier */
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 
-export type AnimalDocument = Animal & Document;
+export type NewDocument = New & Document;
 
 @Schema()
-export class Animal {
+export class New {
 	@Prop()
 	name: string;
-
-	@Prop()
-	type: string;
-
-	@Prop()
-	age: string;
 
 	@Prop()
 	text: string;
@@ -23,9 +19,6 @@ export class Animal {
 
 	@Prop()
 	picture: string;
-
-	@Prop()
-	sex: string;
 }
 
-export const AnimalSchema = SchemaFactory.createForClass(Animal);
+export const NewSchema = SchemaFactory.createForClass(New);

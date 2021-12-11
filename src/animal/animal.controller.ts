@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Body, Controller, Delete, Get, Param, Post, Query, UploadedFiles, UseInterceptors, Put } from "@nestjs/common";
 import { AnimalService } from "./animal.service";
 import { CreateAnimalDto } from "./dto/create-animal.dto";
@@ -9,42 +10,42 @@ import { Animal } from "./schemas/animal.schema";
 
 @Controller('/animals')
 export class AnimalController {
-    constructor(private animalService: AnimalService) { }
+	constructor(private animalService: AnimalService) { }
 
-    @Post()
-    @UseInterceptors(FileFieldsInterceptor([
-        { name: 'picture', maxCount: 1 },
-    ]))
-    create(@UploadedFiles() files, @Body() dto: CreateAnimalDto) {
-        const { picture } = files
-        return this.animalService.create(dto, picture[0]);
-    }
+	@Post()
+	@UseInterceptors(FileFieldsInterceptor([
+		{ name: 'picture', maxCount: 1 },
+	]))
+	create(@UploadedFiles() files, @Body() dto: CreateAnimalDto) {
+		const { picture } = files
+		return this.animalService.create(dto, picture[0]);
+	}
 
-    @Get()
-    getAll(@Query('count') count: number,
-        @Query('offset') offset: number,
-        @Query('type') type: string): Promise<Animal[]> {
-        const data = this.animalService.getAll(count, offset, type);
+	@Get()
+	getAll(
+		@Query('count') count: number,
+		@Query('offset') offset: number,
+		@Query('type') type: string): Promise<Animal[]> {
+		const data = this.animalService.getAll(count, offset, type);
+		return data;
+	}
 
-        return data;
-    }
+	// @Get()
+	// search(@Query('query') query: string) {
+	//     return this.animalService.search(query)
+	// }
 
-    // @Get()
-    // search(@Query('query') query: string) {
-    //     return this.animalService.search(query)
-    // }
+	@Get(':id')
+	getOne(@Param('id') id: ObjectId) {
+		return this.animalService.getOne(id);
+	}
 
-    @Get(':id')
-    getOne(@Param('id') id: ObjectId) {
-        return this.animalService.getOne(id);
-    }
-
-    @Delete(':id')
-    delete(@Param('id') id: ObjectId) {
-        return this.animalService.delete(id);
-    }
-    @Put(':id')
-    update(@Param('id') id: ObjectId, @Body() updateAnimalDto: UpdateAnimalDto) {
-        return this.animalService.update(id, updateAnimalDto);
-    }
+	@Delete(':id')
+	delete(@Param('id') id: ObjectId) {
+		return this.animalService.delete(id);
+	}
+	@Put(':id')
+	update(@Param('id') id: ObjectId, @Body() updateAnimalDto: UpdateAnimalDto) {
+		return this.animalService.update(id, updateAnimalDto);
+	}
 }
