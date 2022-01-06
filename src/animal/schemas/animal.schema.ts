@@ -4,6 +4,12 @@ import * as mongoose from 'mongoose';
 
 export type AnimalDocument = Animal & Document;
 
+export enum Type {
+	CAT = 'CAT',
+	HOME = 'HOME',
+	DOGS = 'DOGS',
+}
+
 @Schema()
 export class Animal {
 	@Prop()

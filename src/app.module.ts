@@ -8,11 +8,16 @@ import * as path from 'path'
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { AuthModule } from "./auth/auth.module";
 import { NewModule } from './new/new.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
 	imports: [
+		ConfigModule.forRoot({
+			envFilePath: `.env.${process.env.NODE_ENV}`,
+			isGlobal: true,
+		}),
 		ServeStaticModule.forRoot({ rootPath: path.resolve(__dirname, 'static') }),
-		MongooseModule.forRoot('mongodb+srv://adminmerc:Zas321qaz_@mercecommerce.tg45i.mongodb.net/dobrodeya?retryWrites=true&w=majority'),
+		MongooseModule.forRoot(`mongodb+srv://adminmerc:Zas321qaz_@mercecommerce.tg45i.mongodb.net/dobrodeya?retryWrites=true&w=majority`),
 		AnimalModule,
 		NewModule,
 		AuthModule,
