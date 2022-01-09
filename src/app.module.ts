@@ -13,11 +13,11 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
 	imports: [
 		ConfigModule.forRoot({
-			envFilePath: `.env.${process.env.NODE_ENV}`,
+			envFilePath: `.env.development`,
 			isGlobal: true,
 		}),
 		ServeStaticModule.forRoot({ rootPath: path.resolve(__dirname, 'static') }),
-		MongooseModule.forRoot(`mongodb+srv://adminmerc:Zas321qaz_@mercecommerce.tg45i.mongodb.net/dobrodeya?retryWrites=true&w=majority`),
+		MongooseModule.forRoot(process.env.DB_URI_LOCAL),
 		AnimalModule,
 		NewModule,
 		AuthModule,

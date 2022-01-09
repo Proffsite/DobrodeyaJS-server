@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Animal, AnimalDocument } from "./schemas/animal.schema";
 import { Model, ObjectId } from "mongoose";
+import * as mongoose from 'mongoose';
 import { CreateAnimalDto } from "./dto/create-animal.dto";
 import { FileService, FileType } from "../file/file.service";
 import { UpdateAnimalDto } from "./dto/update-animal.dto";
@@ -21,13 +22,13 @@ export class AnimalService {
 	}
 
 	async getAll(query: Query): Promise<Animal[]> {
-		const resPerPage = 12;
+		const resPerPage = 6;
 		const currentPage = Number(query.page) || 1;
 		const skip = resPerPage * (currentPage - 1);
 		const keyword = query.keyword
 			? {
 				name: {
-					$regex: query.keyword,
+					$regex: query.keyword as string,
 					$options: 'i',
 				},
 			}
@@ -42,15 +43,22 @@ export class AnimalService {
 		// 	const animals = await this.animalModel.find({ type }).limit(Number(count)).skip(Number((offset - 1) * count));
 		// 	return animals;
 		// }
-		console.log(keyword);
 		const animals = await this.animalModel
-			.find({ keyword })
+			.find({ ...keyword })
 			.limit(resPerPage)
 			.skip(skip);
 		return animals;
 	}
 
-	async getOne(id: ObjectId): Promise<Animal> {
+	async getOne(id: string): Promise<Animal> {
+		const isValidId = mongoose.isValidObjectId(id);
+
+		if (!isValidId) {
+			throw new BadRequestException(
+				'Ошибка в объектИД монгусс. Пожалуйста введите корректный ИД.',
+			);
+		}
+
 		const res = await this.animalModel.findById(id);
 		if (!res) {
 			throw new NotFoundException('Animal not found.');
@@ -58,7 +66,7 @@ export class AnimalService {
 		return res;
 	}
 
-	async delete(id: ObjectId): Promise<Animal> {
+	async delete(id: string): Promise<Animal> {
 
 		const animal = await this.animalModel.findByIdAndDelete(id);
 		return animal._id
@@ -70,7 +78,7 @@ export class AnimalService {
 	//     })
 	//     return animals;
 	// }
-	async update(id: ObjectId, animalDto: UpdateAnimalDto): Promise<Animal> {
+	async update(id: string, animalDto: UpdateAnimalDto): Promise<Animal> {
 		return await this.animalModel.findByIdAndUpdate(id, animalDto, {
 			new: true,
 			runValidators: true,
