@@ -1,38 +1,27 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UploadedFiles, UseInterceptors, Put } from "@nestjs/common";
+/* eslint-disable prettier/prettier */
+
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from "./auth.service";
-import { CreateAuthDto } from "./dto/create-Auth.dto";
-import { ObjectId } from "mongoose";
-import { UpdateAuthDto } from "./dto/update-Auth.dto";
+import { LoginDto } from './dto/login.dto';
+import { SignUpDto } from './dto/signup.dto';
 
 
 @Controller('/auth')
 export class AuthController {
-    constructor(private AuthService: AuthService) { }
+	constructor(private authService: AuthService) { }
 
-    @Post()
-    create(@Body() dto: CreateAuthDto) {
+	//Register user
 
-        return this.AuthService.create(dto);
-    }
+	@Post('/signup')
+	signUp(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
+		return this.authService.signUp(signUpDto)
+	}
 
-    @Get()
-    getAll(@Query('count') count: number,
-        @Query('offset') offset: number) {
-        return this.AuthService.getAll(count, offset)
-    }
+	// Login user 
 
-    @Get('/search')
-    search(@Query('query') query: string) {
-        return this.AuthService.search(query)
-    }
+	@Get('/login')
+	login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
+		return this.authService.login(loginDto);
+	}
 
-    @Get(':id')
-    getOne(@Param('id') id: ObjectId) {
-        return this.AuthService.getOne(id);
-    }
-
-    @Delete(':id')
-    delete(@Param('id') id: ObjectId) {
-        return this.AuthService.delete(id);
-    }
 }

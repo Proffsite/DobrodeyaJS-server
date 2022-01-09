@@ -1,5 +1,6 @@
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
-import { Date } from "mongoose";
+/* eslint-disable prettier/prettier */
+import { IsEnum, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { Category } from '../schemas/animal.schema';
 
 export class CreateAnimalDto {
 
@@ -13,10 +14,10 @@ export class CreateAnimalDto {
 	@IsNotEmpty()
 	readonly age: string;
 
-	@IsDate()
+	@IsString()
 	@MaxLength(30)
 	@IsNotEmpty()
-	readonly date: Date;
+	readonly date: string;
 
 	@IsString()
 	@MaxLength(30)
@@ -32,4 +33,9 @@ export class CreateAnimalDto {
 	@MaxLength(30)
 	@IsNotEmpty()
 	readonly type: string;
+
+	@IsNotEmpty()
+	@IsEnum(Category, { message: 'Пожалуйста введите корректную категорию.' })
+	readonly category: Category;
+
 }

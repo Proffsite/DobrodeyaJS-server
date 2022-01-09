@@ -6,6 +6,7 @@ import { ObjectId } from "mongoose";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { UpdateAnimalDto } from "./dto/update-animal.dto";
 import { Animal } from "./schemas/animal.schema";
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 
 @Controller('/animals')
@@ -23,10 +24,8 @@ export class AnimalController {
 
 	@Get()
 	getAll(
-		@Query('count') count: number,
-		@Query('offset') offset: number,
-		@Query('type') type: string): Promise<Animal[]> {
-		const data = this.animalService.getAll(count, offset, type);
+		@Query() query: ExpressQuery,): Promise<Animal[]> {
+		const data = this.animalService.getAll(query);
 		return data;
 	}
 
@@ -36,16 +35,24 @@ export class AnimalController {
 	// }
 
 	@Get(':id')
-	getOne(@Param('id') id: ObjectId) {
+	getOne(@Param('id') id: string): Promise<Animal> {
 		return this.animalService.getOne(id);
 	}
 
 	@Delete(':id')
-	delete(@Param('id') id: ObjectId) {
-		return this.animalService.delete(id);
+	async delete(@Param('id') id: string): Promise<{ deleted: boolean }> {
+		await this.animalService.getOne(id);
+
+		const animal = this.animalService.delete(id);
+		if (animal) {
+			return { deleted: true, }
+		};
 	}
+
 	@Put(':id')
-	update(@Param('id') id: ObjectId, @Body() updateAnimalDto: UpdateAnimalDto) {
+	async update(@Param('id') id: string, @Body() updateAnimalDto: UpdateAnimalDto): Promise<Animal> {
+		await this.animalService.getOne(id);
+
 		return this.animalService.update(id, updateAnimalDto);
 	}
 }

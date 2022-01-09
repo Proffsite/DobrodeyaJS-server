@@ -1,40 +1,70 @@
-import { Injectable } from "@nestjs/common";
+/* eslint-disable prettier/prettier */
+import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Auth, AuthDocument } from "./schemas/auth.schema";
-import { Model, ObjectId } from "mongoose";
-import { CreateAuthDto } from "./dto/create-Auth.dto";
-import { UpdateAuthDto } from "./dto/update-Auth.dto";
+import { User } from "./schemas/user.schema";
+import { Model } from "mongoose";
+import { SignUpDto } from "./dto/signup.dto";
+
+import * as bcrypt from 'bcryptjs';
+import { LoginDto } from './dto/login.dto';
+import APIFeatures from 'src/utils/apiFeatures.utils';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
-    constructor(@InjectModel(Auth.name) private AuthModel: Model<AuthDocument>) { }
+	constructor(
+		@InjectModel(User.name)
+		private userModel: Model<User>,
+		private jwtService: JwtService
+	) { }
 
-    async create(dto: CreateAuthDto): Promise<Auth> {
+	//Register user
 
-        const Auth = await this.AuthModel.create({ ...dto })
-        return Auth;
-    }
+	async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
 
-    async getAll(count = 10, offset = 0): Promise<Auth[]> {
-        const Auths = await this.AuthModel.find().skip(Number(offset)).limit(Number(count));
-        return Auths;
-    }
+		const { name, email, password } = signUpDto;
 
-    async getOne(id: ObjectId): Promise<Auth> {
-        const Auth = await this.AuthModel.findById(id);
-        return Auth;
-    }
+		const hashedPassword = await bcrypt.hash(password, 10)
 
-    async delete(id: ObjectId): Promise<ObjectId> {
-        const Auth = await this.AuthModel.findByIdAndDelete(id);
-        return Auth._id
-    }
+		try {
+			const user = await this.userModel.create({
+				name,
+				email,
+				password: hashedPassword,
+			});
+			const token = await APIFeatures.assignJwtToken(user.id, this.jwtService)
 
-    async search(query: string): Promise<Auth[]> {
-        const Auths = await this.AuthModel.find({
-            name: { $regex: new RegExp(query, 'i') }
-        })
-        return Auths;
-    }
+			return { token };
+
+		} catch (error) {
+			//Handle duplicate email
+			if (error.code === 11000) {
+				throw new ConflictException('Duplicate Email entered');
+			}
+		}
+	}
+
+	//Login User
+	async login(loginDto: LoginDto): Promise<{ token: string }> {
+		const { email, password } = loginDto;
+
+		const user = await this.userModel.findOne({ email }).select('+password')
+
+		if (!user) {
+			throw new UnauthorizedException('Invalid email address or password.');
+		}
+
+		//Check if password is correct or not
+
+		const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+		if (!isPasswordMatched) {
+			throw new UnauthorizedException('Invalid email address or password.');
+		}
+
+		const token = await APIFeatures.assignJwtToken(user.id, this.jwtService)
+
+		return { token };
+	}
 }

@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Animal, AnimalDocument } from "./schemas/animal.schema";
 import { Model, ObjectId } from "mongoose";
+import * as mongoose from 'mongoose';
 import { CreateAnimalDto } from "./dto/create-animal.dto";
 import { FileService, FileType } from "../file/file.service";
 import { UpdateAnimalDto } from "./dto/update-animal.dto";
-import { query } from "express";
+import { Query } from 'express-serve-static-core';
 
 @Injectable()
 export class AnimalService {
@@ -20,21 +21,53 @@ export class AnimalService {
 		return animal;
 	}
 
-	async getAll(count = 12, offset = 1, type = ''): Promise<Animal[]> {
-		if (type == '') {
-			const animals = await this.animalModel.find().skip(Number(offset)).limit(Number(count));
-			return animals;
-		}
-		const animals = await this.animalModel.find({ type }).skip(Number((offset - 1) * count)).limit(Number(count));
+	async getAll(query: Query): Promise<Animal[]> {
+		const resPerPage = 6;
+		const currentPage = Number(query.page) || 1;
+		const skip = resPerPage * (currentPage - 1);
+		const keyword = query.keyword
+			? {
+				name: {
+					$regex: query.keyword as string,
+					$options: 'i',
+				},
+			}
+			: {};
+
+
+		//  if (type == '') {
+		//  	const animals = await this.animalModel.find().limit(Number(count)).skip(Number(offset));
+		//  	return animals;
+		//  }
+		// if (keyword == '') {
+		// 	const animals = await this.animalModel.find({ type }).limit(Number(count)).skip(Number((offset - 1) * count));
+		// 	return animals;
+		// }
+		const animals = await this.animalModel
+			.find({ ...keyword })
+			.limit(resPerPage)
+			.skip(skip);
 		return animals;
 	}
 
-	async getOne(id: ObjectId): Promise<Animal> {
-		const animal = await this.animalModel.findById(id);
-		return animal;
+	async getOne(id: string): Promise<Animal> {
+		const isValidId = mongoose.isValidObjectId(id);
+
+		if (!isValidId) {
+			throw new BadRequestException(
+				'Ошибка в объектИД монгусс. Пожалуйста введите корректный ИД.',
+			);
+		}
+
+		const res = await this.animalModel.findById(id);
+		if (!res) {
+			throw new NotFoundException('Animal not found.');
+		}
+		return res;
 	}
 
-	async delete(id: ObjectId): Promise<ObjectId> {
+	async delete(id: string): Promise<Animal> {
+
 		const animal = await this.animalModel.findByIdAndDelete(id);
 		return animal._id
 	}
@@ -45,7 +78,10 @@ export class AnimalService {
 	//     })
 	//     return animals;
 	// }
-	async update(id: ObjectId, animalDto: UpdateAnimalDto): Promise<Animal> {
-		return this.animalModel.findByIdAndUpdate(id, animalDto)
+	async update(id: string, animalDto: UpdateAnimalDto): Promise<Animal> {
+		return await this.animalModel.findByIdAndUpdate(id, animalDto, {
+			new: true,
+			runValidators: true,
+		})
 	}
 }
