@@ -6,21 +6,22 @@ import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
 
 
-@Controller('/auth')
+@Controller('')
 export class AuthController {
 	constructor(private authService: AuthService) { }
 
 	//Register user
 
-	@Post('/signup')
-	signUp(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
-		return this.authService.signUp(signUpDto)
+	@Post('/register')
+	register(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
+		return this.authService.register(signUpDto)
 	}
 
 	// Login user 
 
-	@Get('/login')
+	@Post('/login')
 	login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
+		console.log('nest', loginDto);
 		return this.authService.login(loginDto);
 	}
 

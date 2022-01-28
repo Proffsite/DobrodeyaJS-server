@@ -8,18 +8,28 @@ import { CreateAnimalDto } from "./dto/create-animal.dto";
 import { FileService, FileType } from "../file/file.service";
 import { UpdateAnimalDto } from "./dto/update-animal.dto";
 import { Query } from 'express-serve-static-core';
+import { User } from 'src/auth/schemas/user.schema';
 
 @Injectable()
 export class AnimalService {
 
-	constructor(@InjectModel(Animal.name) private animalModel: Model<AnimalDocument>,
+	constructor(
+		@InjectModel(Animal.name)
+		private animalModel: Model<AnimalDocument>,
 		private fileService: FileService) { }
 
-	async create(dto: CreateAnimalDto, picture): Promise<Animal> {
+
+
+	async create(dto: CreateAnimalDto, user: User, picture): Promise<Animal> {
 		const picturePath = this.fileService.createFile(FileType.IMAGE, picture);
-		const animal = await this.animalModel.create({ ...dto, picture: picturePath })
-		return animal;
+		const data = Object.assign(dto, { user: user._id, picture: picturePath });
+		console.log(data);
+		const res = await this.animalModel.create(data);
+		return res;
 	}
+
+
+
 
 	async getAll(query: Query): Promise<Animal[]> {
 		const resPerPage = 6;
@@ -27,7 +37,7 @@ export class AnimalService {
 		const skip = resPerPage * (currentPage - 1);
 		const keyword = query.keyword
 			? {
-				name: {
+				category: {
 					$regex: query.keyword as string,
 					$options: 'i',
 				},

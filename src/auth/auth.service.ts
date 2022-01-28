@@ -21,7 +21,7 @@ export class AuthService {
 
 	//Register user
 
-	async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
+	async register(signUpDto: SignUpDto): Promise<{ token: string }> {
 
 		const { name, email, password } = signUpDto;
 
@@ -50,6 +50,7 @@ export class AuthService {
 		const { email, password } = loginDto;
 
 		const user = await this.userModel.findOne({ email }).select('+password')
+		console.log(user);
 
 		if (!user) {
 			throw new UnauthorizedException('Invalid email address or password.');

@@ -8,6 +8,7 @@ import { FileService } from "../file/file.service";
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
 
 
 @Module({
@@ -19,7 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
 				return {
 					secret: config.get<string>('JWT_SECRET'),
 					signOption: {
-						expiresIn: config.get<string | number>('JWT_EXPIRES')
+						expiresIn: config.get<string | number>('JWT_EXPIRES'),
 					},
 				};
 			},
@@ -27,6 +28,7 @@ import { JwtModule } from '@nestjs/jwt';
 		MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
 	],
 	controllers: [AuthController],
-	providers: [AuthService, FileService]
+	providers: [AuthService, FileService, JwtStrategy],
+	exports: [JwtStrategy, PassportModule],
 })
-export class AuthModule { }
+export class AuthModule {}

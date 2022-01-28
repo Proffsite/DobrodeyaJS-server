@@ -13,6 +13,8 @@ export enum UserRoles {
 @Schema()
 export class User extends Document {
 
+
+
 	@Prop({ required: true })
 	name: string;
 
@@ -28,5 +30,6 @@ export class User extends Document {
 	})
 	role: UserRoles;
 }
+
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -2,6 +2,8 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { User } from 'src/auth/schemas/user.schema';
+import * as mongoose from 'mongoose';
 
 export type AnimalDocument = Animal & Document;
 
@@ -23,13 +25,10 @@ export class Animal {
 	name: string;
 
 	@Prop()
-	type: string;
+	text: string;
 
 	@Prop()
 	age: string;
-
-	@Prop()
-	text: string;
 
 	@Prop()
 	date: string;
@@ -41,7 +40,13 @@ export class Animal {
 	sex: string;
 
 	@Prop()
+	type: string;
+
+	@Prop()
 	category: Category;
+
+	@Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+	user: User;
 }
 
 export const AnimalSchema = SchemaFactory.createForClass(Animal);
