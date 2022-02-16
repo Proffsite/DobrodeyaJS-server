@@ -5,7 +5,7 @@ import { AnimalService } from "./animal.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Animal, AnimalSchema } from "./schemas/animal.schema";
 import { FileService } from "../file/file.service";
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '..//auth/auth.module';
 
 
 @Module({

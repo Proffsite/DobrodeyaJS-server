@@ -4,6 +4,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+export type UserDocument = User & Document;
 
 export enum UserRoles {
 	ADMIN = 'admin',
@@ -22,12 +23,13 @@ export class User extends Document {
 	email: string;
 
 	@Prop({ select: false })
-	password: string;
+	password?: string;
 
 	@Prop({
 		enum: UserRoles,
 		default: UserRoles.USER,
 	})
+
 	role: UserRoles;
 }
 

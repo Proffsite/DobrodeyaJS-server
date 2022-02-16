@@ -3,7 +3,7 @@ import { Module } from "@nestjs/common";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { MongooseModule } from "@nestjs/mongoose";
-import { UserSchema } from "./schemas/user.schema";
+import { UserSchema } from "../user/schemas/user.schema";
 import { FileService } from "../file/file.service";
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
@@ -31,4 +31,4 @@ import { JwtStrategy } from './jwt.strategy';
 	providers: [AuthService, FileService, JwtStrategy],
 	exports: [JwtStrategy, PassportModule],
 })
-export class AuthModule {}
+export class AuthModule { }

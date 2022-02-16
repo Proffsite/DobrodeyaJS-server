@@ -2,7 +2,7 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { User } from 'src/auth/schemas/user.schema';
+import { User } from '..//../user/schemas/user.schema';
 import * as mongoose from 'mongoose';
 
 export type AnimalDocument = Animal & Document;

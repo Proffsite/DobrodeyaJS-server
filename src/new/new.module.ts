@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from "@nestjs/common";
 import { NewController } from "./new.controller";
 import { NewService } from "./new.service";

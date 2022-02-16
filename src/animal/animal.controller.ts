@@ -10,7 +10,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { User } from '../auth/schemas/user.schema';
+import { User } from '../user/schemas/user.schema';
 
 
 @Controller('/animals')
@@ -23,7 +23,7 @@ export class AnimalController {
 		const data = this.animalService.getAll(query);
 		return data;
 	}
-	
+
 	@Post()
 	@UseGuards(AuthGuard(), RolesGuard)
 	@Roles('admin', 'user')
@@ -33,10 +33,9 @@ export class AnimalController {
 	create(
 		@Body() dto: CreateAnimalDto,
 		@CurrentUser() user: User,
-		@UploadedFiles() files,)
-		{
+		@UploadedFiles() files,) {
 		const { picture } = files
-		return this.animalService.create(dto,user, picture[0]);
+		return this.animalService.create(dto, user, picture[0]);
 	}
 
 
@@ -44,7 +43,7 @@ export class AnimalController {
 	getOne(
 		@Param('id')
 		id: string,
-		): Promise<Animal> {
+	): Promise<Animal> {
 		return this.animalService.getOne(id);
 	}
 
@@ -56,11 +55,11 @@ export class AnimalController {
 		id: string,
 		@Body() updateAnimalDto: UpdateAnimalDto,
 		@CurrentUser() user: User,
-		): Promise<Animal> {
+	): Promise<Animal> {
 
 		const res = await this.animalService.getOne(id);
 
-		if (res.user.toString() !== user._id.toString() ) {
+		if (res.user.toString() !== user._id.toString()) {
 			throw new ForbiddenException('You can not update this animal.');
 		}
 		return this.animalService.update(id, updateAnimalDto);
@@ -72,13 +71,13 @@ export class AnimalController {
 		@Param('id')
 		id: string,
 		@CurrentUser() user: User,
-		): Promise<{ deleted: boolean }> {
+	): Promise<{ deleted: boolean }> {
 
 		const res = await this.animalService.getOne(id);
 
 		if (res.user.toString() !== user._id.toString()) {
 			throw new ForbiddenException('You can not delete this restaurant.');
-		  }
+		}
 
 
 		const animal = this.animalService.delete(id);

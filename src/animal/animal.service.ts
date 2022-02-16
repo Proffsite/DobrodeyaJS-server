@@ -8,7 +8,7 @@ import { CreateAnimalDto } from "./dto/create-animal.dto";
 import { FileService, FileType } from "../file/file.service";
 import { UpdateAnimalDto } from "./dto/update-animal.dto";
 import { Query } from 'express-serve-static-core';
-import { User } from 'src/auth/schemas/user.schema';
+import { User } from '../user/schemas/user.schema';
 
 @Injectable()
 export class AnimalService {
@@ -23,7 +23,6 @@ export class AnimalService {
 	async create(dto: CreateAnimalDto, user: User, picture): Promise<Animal> {
 		const picturePath = this.fileService.createFile(FileType.IMAGE, picture);
 		const data = Object.assign(dto, { user: user._id, picture: picturePath });
-		console.log(data);
 		const res = await this.animalModel.create(data);
 		return res;
 	}
@@ -65,7 +64,7 @@ export class AnimalService {
 
 		if (!isValidId) {
 			throw new BadRequestException(
-				'Ошибка в объектИД монгусс. Пожалуйста введите корректный ИД.',
+				'Ошибка в объект ИД монгусс. Пожалуйста введите корректный ИД.',
 			);
 		}
 

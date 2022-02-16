@@ -9,6 +9,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { AuthModule } from "./auth/auth.module";
 import { NewModule } from './new/new.module';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { ConfigModule } from '@nestjs/config';
 		AnimalModule,
 		NewModule,
 		AuthModule,
+		UserModule,
 		FileModule
 	]
 })

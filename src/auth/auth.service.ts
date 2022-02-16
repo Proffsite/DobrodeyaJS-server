@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { User } from "./schemas/user.schema";
+import { User } from "../user/schemas/user.schema";
 import { Model } from "mongoose";
-import { SignUpDto } from "./dto/signup.dto";
+import { SignUpDto } from "../user/dto/signup.dto";
 
 import * as bcrypt from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from '../user/dto/login.dto';
 import APIFeatures from 'src/utils/apiFeatures.utils';
 import { JwtService } from '@nestjs/jwt';
 
@@ -50,7 +50,6 @@ export class AuthService {
 		const { email, password } = loginDto;
 
 		const user = await this.userModel.findOne({ email }).select('+password')
-		console.log(user);
 
 		if (!user) {
 			throw new UnauthorizedException('Invalid email address or password.');
